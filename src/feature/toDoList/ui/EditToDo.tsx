@@ -8,32 +8,30 @@ import { toast } from 'sonner'
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/shared/ui/card'
 import { Label } from '@/shared/ui/label'
 import { X } from 'lucide-react'
-import type { Todo } from '../type/todo.type'
 import { useTodoListStore } from '../model/todoStore'
+import { useCreateStore } from '@/feature/createToDo/model/createstore'
 
 interface Props {
   id: number
 }
 
-export const EditToDo: React.FC<Props> = ({ id }) => {
+const EditToDo: React.FC<Props> = ({ id }) => {
   const {setEditVisible, setRender} =useTodoListStore();
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>()
-  const [formData, setFormData] = useState<Todo>({
+  const { endDate, setEndDate, startDate, setStartDate } = useCreateStore()
+  const [formData, setFormData] = useState({
     id: 0,
     title: '',
     description: '',
     status: 'todo',
-    date: new Date().toISOString(), 
-    createdAt: ''
   })
-
   useEffect(() => {
     const todoString = localStorage.getItem(`${id}`)
     if (todoString) {
       const todoData = JSON.parse(todoString)
       setFormData(todoData)
-      if (todoData.date) {
-        setSelectedDate(new Date(todoData.date))
+      setStartDate(todoData.startDate)
+      if (todoData.endDate) {
+        setEndDate(todoData.endDate)
       }
     }
   }, [id])
@@ -47,17 +45,6 @@ export const EditToDo: React.FC<Props> = ({ id }) => {
     setFormData(prev => ({ ...prev, status: value }))
   }
 
- const handleDateChange = (date: Date | undefined) => {
-    setSelectedDate(date)
-    if (date) {
-      setFormData(prev => ({ 
-        ...prev, 
-        date: date.toISOString() 
-      }))
-    }
-  }
-
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     
@@ -68,11 +55,13 @@ export const EditToDo: React.FC<Props> = ({ id }) => {
 
     const updatedTodo = {
       ...formData,
+      endDate,
+      startDate,
       updatedAt: new Date().toISOString()
     }
 
     localStorage.setItem(`${id}`, JSON.stringify(updatedTodo))
-    setEditVisible(false)
+    setEditVisible(null)
     setRender(true)
     toast.success('Задача успешно обновлена')
     
@@ -87,7 +76,7 @@ export const EditToDo: React.FC<Props> = ({ id }) => {
             variant="ghost" 
             size="sm" 
             className="absolute right-4 top-4 rounded-full"
-            onClick={() => setEditVisible(false)}
+            onClick={() => setEditVisible(null)}
           >
             <X className="h-4 w-4" />
           </Button>
@@ -148,10 +137,17 @@ export const EditToDo: React.FC<Props> = ({ id }) => {
             </div>
 
             <div className="space-y-2">
+              <Label>Дата начала</Label>
+              <DatePickerDemo 
+                state={startDate} 
+                func={setStartDate} 
+              />
+            </div>
+            <div className="space-y-2">
               <Label>Дата выполнения</Label>
               <DatePickerDemo 
-                state={selectedDate} 
-                func={handleDateChange} 
+                state={endDate} 
+                func={setEndDate} 
               />
             </div>
 
@@ -166,3 +162,5 @@ export const EditToDo: React.FC<Props> = ({ id }) => {
     </div>
   )
 }
+
+export default EditToDo

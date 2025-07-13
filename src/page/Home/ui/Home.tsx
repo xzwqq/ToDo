@@ -13,7 +13,7 @@ const Home: React.FC = () => {
         <Button onClick={() => setStatus('todo')}>Todo</Button>
         <Button onClick={() => setStatus('in progress')}>in Progress</Button>
         <Button onClick={() => setStatus('done')}>Done</Button>
-        <Button onClick={setViewCreateTodo}>Create</Button>
+        <Button className="bg-green-400" onClick={setViewCreateTodo}>Create</Button>
         {viewcreatetodo && <CreateToDo />}
       </div>
     <ToDoList status={status}/>

@@ -12,7 +12,7 @@ import { Label } from "@/shared/ui/label"
 import { X } from "lucide-react"
 
 export const CreateToDo: React.FC = () => {
-  const { nowdate, setnowdate } = useCreateStore()
+  const { endDate, setEndDate, startDate, setStartDate } = useCreateStore()
   const { setViewCreateTodo } = useHomeStore()
   const [formData, setFormData] = useState({
     title: '',
@@ -32,16 +32,18 @@ export const CreateToDo: React.FC = () => {
   const saveTodo = (e: { preventDefault: () => void }) => {
     e.preventDefault()
     if (!formData.title.trim()) {
-      toast.error("Заголовок обязателен")
-      return
+      return toast.error("Заголовок обязателен")
     }
     const todoCount = Number(localStorage.getItem('todoCount') || 0)
     const newTodoId = todoCount + 1
     const newTodo = {
       id: newTodoId,
       ...formData,
-      date: nowdate,
-      createdAt: new Date().toISOString()
+      endDate: endDate,
+      startDate: startDate
+    }
+    if(newTodo.endDate && newTodo.startDate && newTodo.endDate?.toISOString() < newTodo.startDate?.toISOString()){
+      return toast.error('Ошибка в валидации времени')
     }
     localStorage.setItem(`${newTodoId}`, JSON.stringify(newTodo))
     localStorage.setItem('todoCount', `${newTodoId}`)
@@ -119,8 +121,12 @@ export const CreateToDo: React.FC = () => {
             </div>
 
             <div className="space-y-2">
+              <Label>Дата начала</Label>
+              <DatePickerDemo state={startDate} func={setStartDate} />
+            </div>
+            <div className="space-y-2">
               <Label>Дата выполнения</Label>
-              <DatePickerDemo state={nowdate} func={setnowdate} />
+              <DatePickerDemo state={endDate} func={setEndDate} />
             </div>
 
             <CardFooter className="px-0 pb-0 pt-4">

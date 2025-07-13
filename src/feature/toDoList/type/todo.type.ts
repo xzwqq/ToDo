@@ -3,6 +3,7 @@ export interface Todo {
   title: string;
   description: string;
   status: 'todo' | 'in progress' | 'done';
-  date: string | Date | undefined;
-  createdAt: string
+  endDate: string | Date | undefined;
+  startDate: string
+  updatedAt?: string
 }

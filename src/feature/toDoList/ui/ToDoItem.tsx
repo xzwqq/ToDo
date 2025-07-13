@@ -4,7 +4,7 @@ import { Button } from '@/shared/ui/button';
 import { Pencil, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTodoListStore } from '../model/todoStore';
-import { EditToDo } from './EditToDo';
+const EditToDo = React.lazy(() => import('./EditToDo'))
 
 interface ToDoItemProps {
   todolist: Todo[];
@@ -13,10 +13,7 @@ export const ToDoItem: React.FC<ToDoItemProps> = React.memo(({ todolist }) => {
   const {setRender, setEditVisible, editVisible} = useTodoListStore()
   const deleteTodo = (id: number) => {
     try{
-      const todotoken = Number(localStorage.getItem('todoCount'))
       localStorage.removeItem(id.toString())
-      const newidtodo = todotoken - 1
-      localStorage.setItem('todoCount', newidtodo.toString())
       setRender(true)
       toast('заметка удалена')
     }catch(e){
@@ -27,9 +24,9 @@ export const ToDoItem: React.FC<ToDoItemProps> = React.memo(({ todolist }) => {
   } 
   return (
     <div className='flex flex-col gap-4 w-full max-w-md mx-auto'>
-      {todolist?.map(item => (
+      {todolist?.map((item, index) => (
         <div 
-          key={item.id} 
+          key={index} 
           className='p-4 border rounded-lg shadow-sm break-words overflow-hidden'
         >
           <div className=' flex justify-end items-end'>
@@ -37,7 +34,7 @@ export const ToDoItem: React.FC<ToDoItemProps> = React.memo(({ todolist }) => {
                   variant="ghost" 
                   size="sm" 
                   className="text-gray-500 hover:text-blue-500 hover:bg-blue-50"
-                  onClick={() => setEditVisible(true)}
+                  onClick={() => setEditVisible(item.id)}
                   >
                   <Pencil className='h-4 w-4' />
             </Button>
@@ -64,16 +61,28 @@ export const ToDoItem: React.FC<ToDoItemProps> = React.memo(({ todolist }) => {
             </span>
             <div className="flex flex-col">
             <span className='text-gray-400 whitespace-nowrap'>
-                от {new Date(item.createdAt).toLocaleDateString()}
+                от {new Date(item.startDate).toLocaleDateString()}
               </span>
-            {item.date && (
+            {item.endDate && (
               <span className='text-gray-400 whitespace-nowrap'>
-                до {new Date(item.date).toLocaleDateString()}
+                до {new Date(item.endDate).toLocaleDateString()}
               </span>
             )}
+            {item.updatedAt && (
+              <span className='text-gray-400 whitespace-nowrap'>
+                обновлен: {new Date(item.updatedAt).toLocaleDateString()}
+              </span>
+            )}
+
           </div>
           </div>
-          {editVisible && <EditToDo id={item.id}/>}
+          {editVisible === item.id && (
+            <React.Suspense fallback={null}>
+              <EditToDo 
+                id={item.id} 
+              />
+            </React.Suspense>
+          )}
         </div>
       ))}
       
