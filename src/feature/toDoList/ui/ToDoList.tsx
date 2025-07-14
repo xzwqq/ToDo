@@ -1,103 +1,4 @@
-// import React, { useCallback, useEffect, useState } from "react";
-// import { ToDoItem } from "./ToDoItem";
-// import type { Todo } from "../type/todo.type";
-// import { useTodoListStore } from "../model/todoStore";
-// import { Input } from "@/shared/ui/input";
-// import { DatePickerDemo } from "@/shared/ui/datapicker";
-// import { Button } from "@/shared/ui/button";
 
-// interface Props {
-//   status: "all" | "todo" | "in progress" | "done";
-// }
-
-// export const ToDoList: React.FC<Props> = ({ status }) => {
-//   const { render, setRender } = useTodoListStore();
-//   const [allTodos, setAllTodos] = useState<Todo[]>([]);
-//   const [selectedStartDate, setStartSelectedDate] = useState<Date | undefined>();
-//   const [selectedEndDate, setEndSelectedDate] = useState<Date | undefined>();
-//   const [paramSearch, setParamSearch] = useState({
-//     searh: "",
-//     startDate: "",
-//     endDate: "",
-//   });
-//   const [filteredTodos, setFilteredTodos] = useState<Todo[]>([]);
-//   const todoCount = Number(localStorage.getItem("todoCount")) || 0;
-
-//   const loadTodos = useCallback(() => {
-//     const loadedTodos: Todo[] = [];
-
-//     for (let i = 1; i <= todoCount; i++) {
-//       const todoString = localStorage.getItem(`${i}`);
-//       if (todoString) {
-//         loadedTodos.push(JSON.parse(todoString));
-//         console.log(JSON.parse(todoString));
-//       }
-//     }
-
-//     setAllTodos(loadedTodos);
-//     setRender(false);
-//     if (status === "all") {
-//       setFilteredTodos(loadedTodos);
-//     } else {
-//       setFilteredTodos(allTodos.filter((todo) => todo.status === status));
-//     }
-//   }, [todoCount, setRender, status]);
-
-//   useEffect(() => {
-//     loadTodos();
-//   }, [status, todoCount, render]);
-
-//   const filterForSearch = () => {
-//     setFilteredTodos(filteredTodos.filter((todo) => todo.title.toLowerCase().includes(paramSearch.searh) ));
-//   };
-
-//   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-//     const { name, value } = e.target;
-//     setParamSearch((prev) => ({ ...prev, [name]: value }));
-//   };
-
-//   const handleStartDateChange = (date: Date | undefined) => {
-//     setStartSelectedDate(date);
-//     if (date) {
-//       setParamSearch((prev) => ({
-//         ...prev,
-//         startDate: date.toISOString(),
-//       }));
-//     }
-//   };
-
-//   const handleEndDateChange = (date: Date | undefined) => {
-//     setEndSelectedDate(date);
-//     if (date) {
-//       setParamSearch((prev) => ({
-//         ...prev,
-//         endDate: date.toISOString(),
-//       }));
-//     }
-//   };
-
-//   return (
-//     <div className="w-full flex justify-center items-center flex-col text-center">
-//       <div className="flex flex-row items-center">
-//         <Input
-//           value={paramSearch.searh}
-//           onChange={(e) => handleChange(e)}
-//           placeholder="Поиск"
-//           className="w-2xs"
-//         />
-//         <DatePickerDemo state={selectedStartDate} func={handleStartDateChange} />
-//         <DatePickerDemo state={selectedEndDate} func={handleEndDateChange} />
-//         <Button onClick={filterForSearch}>Поиск</Button>
-//       </div>
-//       <div className="p-6">{status}</div>
-//       {filteredTodos.length === 0 ? (
-//         <p className="text-center text-gray-500">No tasks found</p>
-//       ) : (
-//         <ToDoItem todolist={filteredTodos} />
-//       )}
-//     </div>
-//   );
-// };
 import React, { useCallback, useEffect, useState } from "react";
 import { ToDoItem } from "./ToDoItem";
 import type { Todo } from "../type/todo.type";
@@ -148,7 +49,7 @@ export const ToDoList: React.FC<Props> = ({ status }) => {
     }
 
     if (debouncedSearchTerm) {
-      const searchinput = debouncedSearchTerm.toLowerCase();
+      const searchinput = debouncedSearchTerm.toLowerCase().trim();
       result = result.filter((todo) =>
         todo.title.toLowerCase().includes(searchinput)
       );
